@@ -53,7 +53,7 @@ jobs:
         run: npm run check:rules
 
       - name: Run Playwright tests
-        run: npm test
+        run: npm run test:cross-browser
 
       - name: Restore Allure history
         if: always()

@@ -99,7 +99,7 @@ The GitHub Actions workflow in `.github/workflows/playwright-allure.yml` covers 
 1. Install Node dependencies with `npm ci`.
 2. Install Playwright browsers.
 3. Run lint and workspace rule checks.
-4. Run Playwright tests.
+4. Run the full Playwright browser and viewport matrix.
 5. Copy Allure history from the previous `gh-pages` report branch.
 6. Generate a new Allure report.
 7. Upload Playwright and Allure artifacts for every run.
@@ -124,8 +124,9 @@ docs/                   Manual test plan and test-case rules
 | Layer | Browser / Viewport | Command | When to Run |
 | --- | --- | --- | --- |
 | Default quality | Chromium desktop | `npm test`, `npm run quality` | Local development and pull requests |
-| Extended cross-browser | Chromium, Firefox, WebKit desktop | `npm run test:cross-browser` | Before final submission |
-| Responsive check | Pixel 5 mobile viewport | `npm run test:mobile` | Before final submission |
+| CI report pipeline | Chromium, Firefox, WebKit desktop, Pixel 5 mobile | `npm run test:cross-browser` | Every push, pull request, and manual workflow run |
+| Extended cross-browser | Chromium, Firefox, WebKit desktop, Pixel 5 mobile | `npm run test:cross-browser` | Before final submission |
+| Responsive check | Pixel 5 mobile viewport | `npm run test:mobile` | Targeted mobile-only verification |
 
 ## Notes
 
