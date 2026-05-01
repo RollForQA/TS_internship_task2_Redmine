@@ -2,6 +2,7 @@ const { test } = require('@playwright/test');
 
 const { IssuesPage } = require('../pages/IssuesPage');
 const { labelTest } = require('../support/allureLabels');
+const { attachPageErrorChecks } = require('../support/pageErrorChecks');
 const { issueData } = require('../fixtures/redmine-data.json');
 
 test('TC-03: Verify Issues page default list, custom queries, and filter controls @regression', async ({ page }) => {
@@ -13,6 +14,7 @@ test('TC-03: Verify Issues page default list, custom queries, and filter control
     severity: 'normal',
   });
 
+  const browserErrors = attachPageErrorChecks(page);
   const issuesPage = new IssuesPage(page);
 
   await test.step('Open Redmine Issues page', async () => {
@@ -35,5 +37,9 @@ test('TC-03: Verify Issues page default list, custom queries, and filter control
 
   await test.step('Open a safe custom query', async () => {
     await issuesPage.openCustomQuery(issueData.safeCustomQuery);
+  });
+
+  await test.step('Verify browser runtime has no critical errors', async () => {
+    await browserErrors.expectNoCriticalErrors();
   });
 });

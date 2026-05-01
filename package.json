@@ -32,6 +32,7 @@
     "allure-commandline": "^2.35.1",
     "allure-playwright": "^3.4.3",
     "eslint": "^10.3.0",
+    "eslint-plugin-playwright": "^2.10.2",
     "globals": "^17.5.0"
   }
 }

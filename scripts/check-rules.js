@@ -112,4 +112,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-process.stdout.write('Workspace rule checks passed.\n');
+console.log('Workspace rule checks passed.');

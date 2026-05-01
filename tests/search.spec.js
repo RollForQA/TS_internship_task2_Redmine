@@ -3,6 +3,7 @@ const { test } = require('@playwright/test');
 const { HomePage } = require('../pages/HomePage');
 const { SearchPage } = require('../pages/SearchPage');
 const { labelTest } = require('../support/allureLabels');
+const { attachPageErrorChecks } = require('../support/pageErrorChecks');
 const { searchQueries } = require('../fixtures/redmine-data.json');
 
 test('TC-04: Verify global header search handles valid and no-result public queries @regression', async ({ page }) => {
@@ -14,6 +15,7 @@ test('TC-04: Verify global header search handles valid and no-result public quer
     severity: 'normal',
   });
 
+  const browserErrors = attachPageErrorChecks(page);
   const homePage = new HomePage(page);
   const searchPage = new SearchPage(page);
 
@@ -30,4 +32,8 @@ test('TC-04: Verify global header search handles valid and no-result public quer
       }
     });
   }
+
+  await test.step('Verify browser runtime has no critical errors', async () => {
+    await browserErrors.expectNoCriticalErrors();
+  });
 });
