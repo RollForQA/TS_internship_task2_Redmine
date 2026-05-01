@@ -42,6 +42,12 @@ Run all configured browsers:
 npm run test:cross-browser
 ```
 
+The suite targets the live Redmine site, so local parallelism is conservative by default. Override it only when needed:
+
+```bash
+PLAYWRIGHT_WORKERS=2 PLAYWRIGHT_RETRIES=1 npm run test:cross-browser
+```
+
 Run mobile viewport coverage:
 
 ```bash
@@ -96,7 +102,8 @@ The GitHub Actions workflow in `.github/workflows/playwright-allure.yml` covers 
 4. Run Playwright tests.
 5. Copy Allure history from the previous `gh-pages` report branch.
 6. Generate a new Allure report.
-7. Publish the report to the `gh-pages` branch of the same repository.
+7. Upload Playwright and Allure artifacts for every run.
+8. Publish the report to the `gh-pages` branch of the same repository for pushes and manual runs.
 
 GitHub Pages should be enabled in the repository settings with source branch `gh-pages` and folder `/`.
 
@@ -106,7 +113,7 @@ GitHub Pages should be enabled in the repository settings with source branch `gh
 components/             Shared header and footer components
 fixtures/               Data sets from the Automation Data sheet
 pages/                  Page Object Model classes
-support/                Allure helpers
+support/                Playwright fixtures, Allure helpers, guards, and builders
 tests/                  TC-01 ... TC-05 Playwright specs
 docs/                   Manual test plan and test-case rules
 .github/workflows/      GitHub Actions Allure pipeline
@@ -124,6 +131,12 @@ docs/                   Manual test plan and test-case rules
 
 The Redmine home page is part of the Redmine project context, so its header search form currently routes to `/projects/redmine/search`. The automated test treats this as the header search flow and verifies that the route contains `/search`, the query is preserved, and the page handles all query variants safely.
 
-Register validation scenarios intercept `POST /account/register` with `page.route()` and return controlled validation responses. This keeps the flow aligned with the production form safety rule: no real account is created and no registration POST is sent to Redmine.
+Register validation scenarios use real invalid Redmine form submissions. The shared route guard in `support/registerGuard.js` inspects each `POST /account/register` payload and allows only the expected invalid payload for the active scenario. If a scenario ever tries to submit a potentially valid account, the guard returns a fail-safe blocked response instead of creating an account.
+
+Shared Playwright fixtures in `support/fixtures.js` create page objects, apply Allure labels from `support/testMetadata.js`, and automatically verify browser console/page errors after each test. Common Redmine availability checks live in `pages/BasePage.js`, so specs stay focused on user scenarios instead of setup assertions.
 
 The assignment requires exactly five automated tests. Some tests intentionally cover several related checks in a single user flow, with sub-scenarios represented as `test.step()` blocks and Allure steps.
+
+## Known Limitations
+
+These tests run against the public live `redmine.org` site, so content, public query results, and response times can change outside this repository. Assertions prefer stable page structure and public labels, but failures should still be reviewed against the current production page before treating them as product regressions.

@@ -1,5 +1,7 @@
 const { expect } = require('@playwright/test');
 const { BasePage } = require('./BasePage');
+const { guardInvalidRegisterPost } = require('../support/registerGuard');
+const { buildFakeUser } = require('../support/userBuilder');
 
 class RegisterPage extends BasePage {
   constructor(page) {
@@ -41,13 +43,9 @@ class RegisterPage extends BasePage {
   }
 
   async submitEmptyForm() {
-    await this.stubRegisterValidation([
-      "Login can't be blank",
-      "Password is too short",
-      "First name can't be blank",
-      "Last name can't be blank",
-      "Email can't be blank",
-    ]);
+    await guardInvalidRegisterPost(this.page, 'empty required fields', ({ login, password, firstName, lastName, email }) => (
+      !login || !password || !firstName || !lastName || !email
+    ));
     await this.submitForm();
     await this.expectValidationErrors(/Login|Password|First name|Last name|Email/);
     return this;
@@ -62,8 +60,8 @@ class RegisterPage extends BasePage {
   }
 
   async submitShortPassword(data) {
-    await this.stubRegisterValidation(['Password is too short. Must be at least 8 characters long.']);
-    await this.fillBaseUser(this.buildFakeUser(data.fakeUser));
+    await guardInvalidRegisterPost(this.page, 'short password', ({ password }) => password.length < 8);
+    await this.fillBaseUser(buildFakeUser(data.fakeUser));
     await this.passwordInput.fill(data.shortPassword);
     await this.passwordConfirmationInput.fill(data.shortPassword);
     await this.submitForm();
@@ -72,27 +70,28 @@ class RegisterPage extends BasePage {
   }
 
   async expectPasswordBoundaryBlockedByOtherValidation(data) {
-    await this.stubRegisterValidation(["Last name can't be blank"]);
-    const fakeUser = this.buildFakeUser(data.fakeUser, 'boundary');
+    await guardInvalidRegisterPost(this.page, 'password boundary with missing last name', ({ password, confirmation, lastName }) => (
+      password.length >= 8 && password === confirmation && !lastName
+    ));
+    const fakeUser = buildFakeUser(data.fakeUser, 'boundary');
 
-    await this.loginInput.fill(fakeUser.login);
+    await this.fillBaseUser({ ...fakeUser, lastName: '' });
     await this.passwordInput.fill(data.boundaryPassword);
     await this.passwordConfirmationInput.fill(data.boundaryPassword);
-    await this.firstNameInput.fill(fakeUser.firstName);
-    await this.lastNameInput.fill('');
-    await this.emailInput.fill(fakeUser.email);
     await this.submitForm();
 
-    // Keep another required-field error in the mocked response so the test never creates a real account.
+    // Keep another required-field error in the submitted data so the test never creates a real account.
     await this.expectValidationErrors(/Last name/i);
     await expect(this.errors).not.toContainText(/Password is too short|Password.*too short/i);
     return this;
   }
 
   async submitPasswordMismatch(data) {
-    await this.stubRegisterValidation(["Password doesn't match confirmation"]);
+    await guardInvalidRegisterPost(this.page, 'password mismatch', ({ password, confirmation }) => (
+      password.length >= 8 && confirmation.length >= 8 && password !== confirmation
+    ));
     await this.fillBaseUser({
-      ...this.buildFakeUser(data.fakeUser, 'mismatch'),
+      ...buildFakeUser(data.fakeUser, 'mismatch'),
     });
     await this.passwordInput.fill(data.mismatchPassword);
     await this.passwordConfirmationInput.fill(data.mismatchConfirmation);
@@ -103,8 +102,7 @@ class RegisterPage extends BasePage {
 
   async submitForm() {
     await expect(this.submitButton).toBeVisible();
-    await this.submitButton.focus();
-    await this.submitButton.press('Enter');
+    await this.submitButton.click();
     return this;
   }
 
@@ -113,52 +111,6 @@ class RegisterPage extends BasePage {
     await expect(this.errors).toBeVisible();
     await expect(this.errors).toContainText(pattern);
     return this;
-  }
-
-  buildFakeUser(fakeUser, suffix = 'negative') {
-    return {
-      login: `${fakeUser.loginPrefix}_${Date.now()}_${suffix}`,
-      firstName: fakeUser.firstName,
-      lastName: fakeUser.lastName,
-      email: fakeUser.email,
-    };
-  }
-
-  async stubRegisterValidation(messages) {
-    await this.page.unroute('**/account/register').catch(() => {});
-    await this.page.route('**/account/register', async (route) => {
-      if (route.request().method() !== 'POST') {
-        await route.continue();
-        return;
-      }
-
-      await route.fulfill({
-        status: 200,
-        contentType: 'text/html',
-        body: this.validationHtml(messages),
-      });
-    });
-
-    return this;
-  }
-
-  validationHtml(messages) {
-    const items = messages.map((message) => `<li>${message}</li>`).join('');
-
-    return `<!DOCTYPE html>
-      <html lang="en">
-        <head><title>Register - Redmine</title></head>
-        <body>
-          <div id="content">
-            <h2>Register</h2>
-            <div id="errorExplanation">
-              <h2>${messages.length} error(s) prohibited this account from being saved</h2>
-              <ul>${items}</ul>
-            </div>
-          </div>
-          <div id="footer">Powered by Redmine</div>
-        </body>
-      </html>`;
   }
 }
 

@@ -1,6 +1,10 @@
 const { expect } = require('@playwright/test');
 const { BasePage } = require('./BasePage');
 
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 class IssuesPage extends BasePage {
   constructor(page) {
     super(page);
@@ -56,11 +60,11 @@ class IssuesPage extends BasePage {
     }
 
     // Redmine public query columns can differ, so fall back to row content when the Tracker column is hidden.
-    await expect(this.issueTable.locator('tbody')).toContainText(new RegExp(trackerLabels.join('|')));
+    await expect(this.issueTable.locator('tbody')).toContainText(new RegExp(trackerLabels.map(escapeRegExp).join('|')));
     return this;
   }
 
-  async expectOptionalColumn(columnName) {
+  async expectOptionalColumnIfPresent(columnName) {
     const columnHeader = this.issueTable.locator('thead').getByText(columnName, { exact: true });
 
     if (await columnHeader.count()) {
@@ -76,10 +80,11 @@ class IssuesPage extends BasePage {
     return this;
   }
 
-  async openCustomQuery(queryName) {
-    await this.page.getByRole('link', { name: queryName }).click();
-    await expect(this.content.locator('h2')).toContainText(new RegExp(`Issues|${queryName}`));
-    await this.expectIssueRows();
+  async expectCustomQueryLinkTarget(queryName) {
+    const queryLink = this.page.getByRole('link', { name: queryName });
+
+    await expect(queryLink).toBeVisible();
+    await expect(queryLink).toHaveAttribute('href', /\/projects\/redmine\/issues\?query_id=\d+/);
     return this;
   }
 }

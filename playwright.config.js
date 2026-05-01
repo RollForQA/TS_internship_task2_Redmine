@@ -1,5 +1,8 @@
 const { defineConfig, devices } = require('@playwright/test');
 
+const localRetries = Number(process.env.PLAYWRIGHT_RETRIES) || 1;
+const localWorkers = Number(process.env.PLAYWRIGHT_WORKERS) || 1;
+
 module.exports = defineConfig({
   testDir: './tests',
   testMatch: '**/*.spec.js',
@@ -9,8 +12,8 @@ module.exports = defineConfig({
   },
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  retries: process.env.CI ? 2 : localRetries,
+  workers: process.env.CI ? 1 : localWorkers,
   reporter: [
     ['list'],
     ['html', { outputFolder: 'playwright-report', open: 'never' }],

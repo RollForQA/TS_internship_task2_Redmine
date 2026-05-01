@@ -4,7 +4,9 @@ const { BasePage } = require('./BasePage');
 class SearchPage extends BasePage {
   constructor(page) {
     super(page);
-    this.searchField = page.locator('#content input[name="q"]');
+    this.searchField = this.content.getByRole('textbox', { name: /search/i }).first();
+    this.resultList = this.content.locator('#search-results');
+    this.resultItems = this.resultList.locator('dt');
   }
 
   async expectSearchPage(query) {
@@ -13,7 +15,7 @@ class SearchPage extends BasePage {
     await expect(this.searchField).toBeVisible();
     await this.expectNoServerError();
 
-    if (query) {
+    if (query !== undefined) {
       await expect(this.searchField).toHaveValue(query);
     }
 
@@ -22,12 +24,15 @@ class SearchPage extends BasePage {
 
   async expectResultsFor(query) {
     await this.expectSearchPage(query);
-    await expect(this.content).toContainText(/Results \(\d+\)|Issues|Wiki pages|Messages|Redmine plugins/);
+    await expect(this.content).toContainText(/Results \(\d+/);
+    await expect(this.resultList).toBeVisible();
+    await expect(this.resultItems.first()).toBeVisible();
     return this;
   }
 
   async expectSafeEmptyOrEdgeCaseHandling() {
     await expect(this.content).not.toContainText(/Internal Server Error|Traceback|Exception/i);
+    await expect(this.content.locator('#errorExplanation, .flash.error')).toHaveCount(0);
     return this;
   }
 }

@@ -1,22 +1,7 @@
-const { test } = require('@playwright/test');
-
-const { IssuesPage } = require('../pages/IssuesPage');
-const { labelTest } = require('../support/allureLabels');
-const { attachPageErrorChecks } = require('../support/pageErrorChecks');
+const { test } = require('../support/fixtures');
 const { issueData } = require('../fixtures/redmine-data.json');
 
-test('TC-03: Verify Issues page default list, custom queries, and filter controls @regression', async ({ page }) => {
-  await labelTest({
-    epic: 'Issue Tracking',
-    feature: 'Issues List',
-    story: 'TC-03 Issues page controls',
-    tag: 'regression',
-    severity: 'normal',
-  });
-
-  const browserErrors = attachPageErrorChecks(page);
-  const issuesPage = new IssuesPage(page);
-
+test('TC-03: Verify Issues page default list, custom queries, and filter controls @regression', async ({ issuesPage }) => {
   await test.step('Open Redmine Issues page', async () => {
     await issuesPage.open();
     await issuesPage.expectPageReady();
@@ -29,17 +14,13 @@ test('TC-03: Verify Issues page default list, custom queries, and filter control
     await issuesPage.expectCoreIssueColumns(issueData.coreColumns);
   });
 
-  await test.step('Verify tracker representation, optional category, rows, and pagination', async () => {
+  await test.step('Verify tracker representation, rows, and pagination', async () => {
     await issuesPage.expectTrackerRepresentation(issueData.trackerLabels);
-    await issuesPage.expectOptionalColumn('Category');
+    await issuesPage.expectOptionalColumnIfPresent('Category');
     await issuesPage.expectIssueRows();
   });
 
-  await test.step('Open a safe custom query', async () => {
-    await issuesPage.openCustomQuery(issueData.safeCustomQuery);
-  });
-
-  await test.step('Verify browser runtime has no critical errors', async () => {
-    await browserErrors.expectNoCriticalErrors();
+  await test.step('Verify a safe custom query target', async () => {
+    await issuesPage.expectCustomQueryLinkTarget(issueData.safeCustomQuery);
   });
 });

@@ -20,6 +20,6 @@ The full manual test plan is maintained in [docs/Redmine_Test_Plan.xlsx](docs/Re
 
 ## Manual Scope Notes
 
-Automation intentionally does not create real accounts, edit Redmine content, create issues, post forum messages, or test third-party sites deeply. Registration submit actions are intercepted with `page.route()` and fulfilled with controlled validation responses.
+Automation intentionally does not create real accounts, edit Redmine content, create issues, post forum messages, or test third-party sites deeply. Registration submit actions use a `page.route()` guard that allows only expected invalid payloads to reach Redmine and blocks any potentially valid account payload.
 
 The assignment requires exactly five automated tests, so TC-04 and TC-05 intentionally group related sub-scenarios under one traceable test case using Playwright `test.step()` blocks.

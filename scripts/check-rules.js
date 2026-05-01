@@ -67,7 +67,7 @@ const seenTcIds = new Map();
 for (const file of readFiles(testsDir)) {
   const relative = path.relative(projectRoot, file);
   const content = fs.readFileSync(file, 'utf8');
-  const testTitles = [...content.matchAll(/test\(\s*['"`]([^'"`]+)['"`]/g)].map((match) => match[1]);
+  const testTitles = [...content.matchAll(/(?:test|testWithLabels)\(\s*['"`]([^'"`]+)['"`]/g)].map((match) => match[1]);
 
   if (/page\.locator\s*\(|page\.getByRole\s*\(|page\.getByLabel\s*\(/.test(content)) {
     failures.push(`${relative}: raw page selectors should stay in POM/components`);
