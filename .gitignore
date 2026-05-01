@@ -3,6 +3,7 @@ test-results/
 playwright-report/
 allure-results/
 allure-report/
+gh-pages/
 blob-report/
 downloads/
 screenshots/

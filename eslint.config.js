@@ -7,6 +7,7 @@ module.exports = [
     ignores: [
       'allure-report/**',
       'allure-results/**',
+      'gh-pages/**',
       'node_modules/**',
       'playwright-report/**',
       'test-results/**',
