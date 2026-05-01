@@ -1,0 +1,96 @@
+{
+  "projectTabs": [
+    {
+      "name": "Overview",
+      "path": "/projects/redmine",
+      "marker": "Overview|Issue tracking|Latest news"
+    },
+    {
+      "name": "Download",
+      "path": "/projects/redmine/wiki/Download",
+      "marker": "Download|Latest releases|Source code"
+    },
+    {
+      "name": "Activity",
+      "path": "/projects/redmine/activity",
+      "marker": "Activity|From \\d{4}-\\d{2}-\\d{2}|Subprojects"
+    },
+    {
+      "name": "Roadmap",
+      "path": "/projects/redmine/roadmap",
+      "marker": "Roadmap|Versions|Completed versions"
+    },
+    {
+      "name": "Issues",
+      "path": "/projects/redmine/issues",
+      "marker": "Issues|Filters|Options"
+    },
+    {
+      "name": "News",
+      "path": "/projects/redmine/news",
+      "marker": "News|Added by|released"
+    },
+    {
+      "name": "Wiki",
+      "path": "/projects/redmine/wiki",
+      "marker": "Redmine is a flexible project management web application|Features|Documentation"
+    },
+    {
+      "name": "Forums",
+      "path": "/projects/redmine/boards",
+      "marker": "Forums|Open discussion|General discussion"
+    }
+  ],
+  "issueData": {
+    "coreColumns": ["#", "Status", "Subject", "Updated"],
+    "customQueries": [
+      "Documentation issues",
+      "Open defects",
+      "Open features",
+      "Patch queue",
+      "Plugin issues",
+      "Translation patches"
+    ],
+    "trackerLabels": ["Feature", "Defect", "Patch"],
+    "safeCustomQuery": "Open defects"
+  },
+  "searchQueries": [
+    {
+      "name": "Valid query",
+      "value": "plugin",
+      "expectResults": true
+    },
+    {
+      "name": "Empty query",
+      "value": "",
+      "expectResults": false
+    },
+    {
+      "name": "Special characters",
+      "value": "<script>",
+      "expectResults": false
+    },
+    {
+      "name": "Long query",
+      "value": "redmine-search-long-query-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "expectResults": false
+    },
+    {
+      "name": "No-result query",
+      "value": "redmine-no-result-qa-2026",
+      "expectResults": false
+    }
+  ],
+  "registerData": {
+    "fakeUser": {
+      "loginPrefix": "qa_redmine",
+      "firstName": "QA",
+      "lastName": "Automation",
+      "email": "qa.redmine@example.test"
+    },
+    "shortPassword": "short7",
+    "boundaryPassword": "Passw0rd",
+    "mismatchPassword": "ValidPass123!",
+    "mismatchConfirmation": "Mismatch123!"
+  }
+}

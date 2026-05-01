@@ -1,0 +1,37 @@
+{
+  "name": "redmine-playwright-tests",
+  "version": "1.0.0",
+  "description": "Playwright POM tests for Redmine.org with Allure reporting.",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test --project=chromium",
+    "test:cross-browser": "playwright test",
+    "test:chromium": "playwright test --project=chromium",
+    "test:mobile": "playwright test --project=mobile-chrome",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:regression": "playwright test --grep @regression",
+    "test:headed": "playwright test --headed",
+    "report:html": "playwright show-report",
+    "report:allure": "node scripts/allure.js generate",
+    "report:allure:open": "node scripts/allure.js open",
+    "lint": "eslint .",
+    "check:rules": "node scripts/check-rules.js",
+    "quality": "npm run lint && npm run check:rules && npm test"
+  },
+  "keywords": [
+    "playwright",
+    "allure",
+    "redmine",
+    "qa"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.59.1",
+    "allure-commandline": "^2.35.1",
+    "allure-playwright": "^3.4.3",
+    "eslint": "^10.3.0",
+    "globals": "^17.5.0"
+  }
+}

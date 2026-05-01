@@ -1,0 +1,12 @@
+node_modules/
+test-results/
+playwright-report/
+allure-results/
+allure-report/
+blob-report/
+downloads/
+screenshots/
+*.log
+.env
+.env.*
+!.env.example
