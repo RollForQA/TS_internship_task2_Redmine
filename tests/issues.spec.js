@@ -20,7 +20,7 @@ test('TC-03: Verify Issues page default list, custom queries, and filter control
     await issuesPage.expectIssueRows();
   });
 
-  await test.step('Verify a safe custom query target', async () => {
-    await issuesPage.expectCustomQueryLinkTarget(issueData.safeCustomQuery);
+  await test.step('Open a safe custom query and verify issue list context', async () => {
+    await issuesPage.expectCustomQueryOpensIssueList(issueData.safeCustomQuery);
   });
 });

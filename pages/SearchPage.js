@@ -35,6 +35,12 @@ class SearchPage extends BasePage {
     await expect(this.content.locator('#errorExplanation, .flash.error')).toHaveCount(0);
     return this;
   }
+
+  async expectQueryRenderedAsText(query) {
+    await expect(this.searchField).toHaveValue(query);
+    await expect(this.page.locator('script', { hasText: query })).toHaveCount(0);
+    return this;
+  }
 }
 
 module.exports = {

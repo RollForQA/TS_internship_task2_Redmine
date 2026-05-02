@@ -15,7 +15,7 @@ The full manual test plan is maintained in [docs/Redmine_Test_Plan.xlsx](docs/Re
 | Layer | Browser / Viewport | Command | When to Run |
 | --- | --- | --- | --- |
 | Smoke and default quality | Chromium desktop | `npm test` or `npm run quality` | Local development and pull requests |
-| Extended cross-browser | Chromium, Firefox, WebKit desktop | `npm run test:cross-browser` | Before final submission or release |
+| Extended cross-browser | Chromium, Firefox, WebKit desktop, Pixel 5 mobile | `npm run test:cross-browser` | Before final submission or release |
 | Responsive check | Pixel 5 mobile viewport | `npm run test:mobile` | Before final submission |
 
 ## Manual Scope Notes

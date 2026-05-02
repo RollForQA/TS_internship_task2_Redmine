@@ -20,6 +20,25 @@ class HomePage extends BasePage {
     await expect(this.page.getByRole('heading', { name: /^Wiki$/i })).toBeVisible();
     await expect(this.page.getByRole('link', { name: /User's Guide/i }).first()).toBeVisible();
     await expect(this.page.getByRole('link', { name: /Developer's Guide/i }).first()).toBeVisible();
+    await this.expectKeyResourceLinksWithinRedmine();
+    return this;
+  }
+
+  async expectKeyResourceLinksWithinRedmine() {
+    const internalHref = /^(\/|https:\/\/www\.redmine\.org\/)/;
+    const keyResourceLinks = [
+      /User's Guide/i,
+      /Developer's Guide/i,
+      /Redmine features/i,
+    ];
+
+    for (const linkName of keyResourceLinks) {
+      const link = this.page.getByRole('link', { name: linkName }).first();
+
+      await expect(link).toBeVisible();
+      await expect(link).toHaveAttribute('href', internalHref);
+    }
+
     return this;
   }
 

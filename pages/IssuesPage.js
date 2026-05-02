@@ -80,11 +80,15 @@ class IssuesPage extends BasePage {
     return this;
   }
 
-  async expectCustomQueryLinkTarget(queryName) {
+  async expectCustomQueryOpensIssueList(queryName) {
     const queryLink = this.page.getByRole('link', { name: queryName });
 
     await expect(queryLink).toBeVisible();
     await expect(queryLink).toHaveAttribute('href', /\/projects\/redmine\/issues\?query_id=\d+/);
+    await queryLink.click();
+    await expect(this.page).toHaveURL(/\/projects\/redmine\/issues\?query_id=\d+/);
+    await expect(this.issueTable).toBeVisible();
+    await expect(this.page.locator('#query_form')).toBeVisible();
     return this;
   }
 }
